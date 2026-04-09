@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Customer Twin - Dashboard Portal</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+.header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 3rem 2rem; text-align: center; border-bottom: 2px solid #3b82f6; }
+.header h1 { font-size: 2rem; color: #f8fafc; margin-bottom: 0.5rem; }
+.header p { color: #94a3b8; font-size: 1rem; }
+.container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+.section-title { font-size: 1.3rem; color: #3b82f6; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #334155; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.card { background: #1e293b; border-radius: 12px; padding: 1.5rem; border: 1px solid #334155; transition: all 0.3s; }
+.card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,130,246,0.15); }
+.card a { text-decoration: none; color: inherit; display: block; }
+.card-title { font-size: 1.1rem; color: #f8fafc; margin-bottom: 0.5rem; }
+.card-product { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.8rem; }
+.product-ppn { background: #7c3aed33; color: #a78bfa; }
+.product-pj { background: #0ea5e933; color: #67e8f9; }
+.card-meta { color: #94a3b8; font-size: 0.85rem; line-height: 1.6; }
+.card-meta strong { color: #cbd5e1; }
+.badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+.badge-knock { background: #7c3aed33; color: #a78bfa; }
+.badge-standard { background: #2563eb33; color: #60a5fa; }
+.card-arrow { text-align: right; color: #3b82f6; font-size: 1.2rem; margin-top: 0.5rem; }
+.footer { text-align: center; padding: 2rem; color: #475569; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Digital Customer Twin</h1>
+  <p>AI Consumer Agent Simulation Dashboard Portal</p>
+</div>
+<div class="container">
+  <h2 class="section-title">PPN - 通貨指定型個人年金保険（24）</h2>
+  <div class="cards">
+    <div class="card"><a href="ppn_100agents.html">
+      <span class="card-product product-ppn">PPN</span>
+      <span class="badge badge-knock">Knock Mode</span>
+      <div class="card-title">100 Agents x 3 Rounds</div>
+      <div class="card-meta">
+        <strong>Agent:</strong> 100 / <strong>Seed:</strong> 42<br>
+        <strong>Result:</strong> 5.0% → 21.0% (+16.0pt)<br>
+        <strong>Sections:</strong> 8 (Talk Script)<br>
+        <strong>Date:</strong> 2026-04-09
+      </div>
+      <div class="card-arrow">→</div>
+    </a></div>
+    <div class="card"><a href="ppn_10agents.html">
+      <span class="card-product product-ppn">PPN</span>
+      <span class="badge badge-knock">Knock Mode</span>
+      <div class="card-title">10 Agents x 3 Rounds</div>
+      <div class="card-meta">
+        <strong>Agent:</strong> 10 / <strong>Seed:</strong> 42<br>
+        <strong>Result:</strong> 0.0% → 10.0% (+10.0pt)<br>
+        <strong>Sections:</strong> 8 (Talk Script)<br>
+        <strong>Date:</strong> 2026-04-09
+      </div>
+      <div class="card-arrow">→</div>
+    </a></div>
+  </div>
+  <h2 class="section-title">PJ - Premier Journey (Comparison)</h2>
+  <div class="cards">
+    <div class="card"><a href="pj_knock.html">
+      <span class="card-product product-pj">PJ</span>
+      <span class="badge badge-knock">Knock Mode</span>
+      <div class="card-title">Real Product - 18 Pages</div>
+      <div class="card-meta">
+        <strong>Agent:</strong> 10 / <strong>Seed:</strong> 42<br>
+        <strong>Product:</strong> Premier Journey<br>
+        <strong>Date:</strong> 2026-03-03
+      </div>
+      <div class="card-arrow">→</div>
+    </a></div>
+    <div class="card"><a href="pj_standard.html">
+      <span class="card-product product-pj">PJ</span>
+      <span class="badge badge-standard">Standard</span>
+      <div class="card-title">Standard Mode - 100 Agents</div>
+      <div class="card-meta">
+        <strong>Agent:</strong> 100 / <strong>Seed:</strong> 42<br>
+        <strong>Product:</strong> Premier Journey<br>
+        <strong>Date:</strong> 2026-02-25
+      </div>
+      <div class="card-arrow">→</div>
+    </a></div>
+  </div>
+</div>
+<div class="footer">
+  Digital Customer Twin PoC — Powered by AI Agent Simulation
+</div>
+</body>
+</html>
