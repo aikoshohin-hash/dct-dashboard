@@ -25,8 +25,13 @@ body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a
 .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
 .badge-knock { background: #7c3aed33; color: #a78bfa; }
 .badge-standard { background: #2563eb33; color: #60a5fa; }
+.badge-new { background: #059669; color: white; }
 .card-arrow { text-align: right; color: #3b82f6; font-size: 1.2rem; margin-top: 0.5rem; }
 .footer { text-align: center; padding: 2rem; color: #475569; font-size: 0.8rem; }
+.flow-diagram { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin: 1rem 0 2rem; }
+.flow-steps { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+.flow-step { text-align: center; padding: 0.8rem 1.2rem; border-radius: 8px; font-size: 0.85rem; }
+.flow-arrow { color: #3b82f6; font-size: 1.5rem; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -35,33 +40,70 @@ body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a
   <p>AI Consumer Agent Simulation Dashboard Portal</p>
 </div>
 <div class="container">
+
+  <div class="flow-diagram">
+    <div style="color:#94a3b8;font-size:0.8rem;margin-bottom:12px;text-align:center;">DCT Workflow</div>
+    <div class="flow-steps">
+      <div class="flow-step" style="background:#1d4ed833;border:1px solid #3b82f6;">
+        <div style="font-size:1.5rem;">📄</div>
+        <div style="color:#60a5fa;font-weight:600;">資料PDF</div>
+        <div style="color:#94a3b8;font-size:0.75rem;">パンフレット</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step" style="background:#7c3aed22;border:1px solid #7c3aed;">
+        <div style="font-size:1.5rem;">📝</div>
+        <div style="color:#a78bfa;font-weight:600;">読み原稿</div>
+        <div style="color:#94a3b8;font-size:0.75rem;">セクション構成</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step" style="background:#dc262622;border:1px solid #dc2626;">
+        <div style="font-size:1.5rem;">👥</div>
+        <div style="color:#f87171;font-weight:600;">AI顧客評価</div>
+        <div style="color:#94a3b8;font-size:0.75rem;">100人ペルソナ</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step" style="background:#05966922;border:1px solid #059669;">
+        <div style="font-size:1.5rem;">🤖</div>
+        <div style="color:#34d399;font-weight:600;">AI壁打ち改善</div>
+        <div style="color:#94a3b8;font-size:0.75rem;">専門家3名提案</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step" style="background:#d9770622;border:1px solid #d97706;">
+        <div style="font-size:1.5rem;">📊</div>
+        <div style="color:#fbbf24;font-weight:600;">効果測定</div>
+        <div style="color:#94a3b8;font-size:0.75rem;">改善率算出</div>
+      </div>
+    </div>
+  </div>
+
   <h2 class="section-title">PPN - 通貨指定型個人年金保険（24）</h2>
   <div class="cards">
     <div class="card"><a href="ppn_100agents.html">
       <span class="card-product product-ppn">PPN</span>
       <span class="badge badge-knock">Knock Mode</span>
-      <div class="card-title">100 Agents x 3 Rounds</div>
+      <span class="badge badge-new">NEW</span>
+      <div class="card-title">100 Agents x 3 Rounds (12 Sections)</div>
       <div class="card-meta">
-        <strong>Agent:</strong> 100 / <strong>Seed:</strong> 42<br>
-        <strong>Result:</strong> 5.0% → 21.0% (+16.0pt)<br>
-        <strong>Sections:</strong> 8 (Talk Script)<br>
+        <strong>Agent:</strong> 100 / <strong>Sections:</strong> 12<br>
+        <strong>Result:</strong> 6.0% &rarr; 23.0% (+17.0pt)<br>
+        <strong>Feature:</strong> 資料マップタブ搭載<br>
         <strong>Date:</strong> 2026-04-09
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card-arrow">&rarr;</div>
     </a></div>
     <div class="card"><a href="ppn_10agents.html">
       <span class="card-product product-ppn">PPN</span>
       <span class="badge badge-knock">Knock Mode</span>
-      <div class="card-title">10 Agents x 3 Rounds</div>
+      <div class="card-title">10 Agents x 3 Rounds (8 Sections)</div>
       <div class="card-meta">
-        <strong>Agent:</strong> 10 / <strong>Seed:</strong> 42<br>
-        <strong>Result:</strong> 0.0% → 10.0% (+10.0pt)<br>
-        <strong>Sections:</strong> 8 (Talk Script)<br>
+        <strong>Agent:</strong> 10 / <strong>Sections:</strong> 8<br>
+        <strong>Result:</strong> 0.0% &rarr; 10.0% (+10.0pt)<br>
         <strong>Date:</strong> 2026-04-09
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card-arrow">&rarr;</div>
     </a></div>
   </div>
+
   <h2 class="section-title">PJ - Premier Journey (Comparison)</h2>
   <div class="cards">
     <div class="card"><a href="pj_knock.html">
@@ -73,7 +115,7 @@ body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a
         <strong>Product:</strong> Premier Journey<br>
         <strong>Date:</strong> 2026-03-03
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card-arrow">&rarr;</div>
     </a></div>
     <div class="card"><a href="pj_standard.html">
       <span class="card-product product-pj">PJ</span>
@@ -84,12 +126,13 @@ body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a
         <strong>Product:</strong> Premier Journey<br>
         <strong>Date:</strong> 2026-02-25
       </div>
-      <div class="card-arrow">→</div>
+      <div class="card-arrow">&rarr;</div>
     </a></div>
   </div>
+
 </div>
 <div class="footer">
-  Digital Customer Twin PoC — Powered by AI Agent Simulation
+  Digital Customer Twin PoC &mdash; Powered by AI Agent Simulation
 </div>
 </body>
 </html>
