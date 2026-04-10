@@ -3,9 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
 <title>Digital Customer Twin - Dashboard Portal</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+#auth-gate { position: fixed; inset: 0; background: #0f172a; z-index: 9999;
+  display: flex; align-items: center; justify-content: center; }
+#auth-gate .auth-box { background: #1e293b; border-radius: 16px; padding: 40px;
+  max-width: 400px; width: 90%; text-align: center; border: 1px solid #334155; }
+#auth-gate h2 { color: #f8fafc; margin-bottom: 8px; }
+#auth-gate p { color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem; }
+#auth-gate input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #475569;
+  background: #0f172a; color: #f8fafc; font-size: 1rem; margin-bottom: 12px; outline: none; }
+#auth-gate input:focus { border-color: #3b82f6; }
+#auth-gate button { width: 100%; padding: 12px; border-radius: 8px; border: none;
+  background: #3b82f6; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+#auth-gate button:hover { background: #2563eb; }
+#auth-gate .error { color: #f87171; font-size: 0.85rem; margin-top: 8px; display: none; }
 body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
 .header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 3rem 2rem; text-align: center; border-bottom: 2px solid #3b82f6; }
 .header h1 { font-size: 2rem; color: #f8fafc; margin-bottom: 0.5rem; }
@@ -25,114 +41,125 @@ body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #0f172a
 .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
 .badge-knock { background: #7c3aed33; color: #a78bfa; }
 .badge-standard { background: #2563eb33; color: #60a5fa; }
-.badge-new { background: #059669; color: white; }
 .card-arrow { text-align: right; color: #3b82f6; font-size: 1.2rem; margin-top: 0.5rem; }
 .footer { text-align: center; padding: 2rem; color: #475569; font-size: 0.8rem; }
-.flow-diagram { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; margin: 1rem 0 2rem; }
-.flow-steps { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
-.flow-step { text-align: center; padding: 0.8rem 1.2rem; border-radius: 8px; font-size: 0.85rem; }
-.flow-arrow { color: #3b82f6; font-size: 1.5rem; font-weight: bold; }
 </style>
 </head>
 <body>
+
+<!-- Authentication Gate -->
+<div id="auth-gate">
+  <div class="auth-box">
+    <h2>Digital Customer Twin</h2>
+    <p>このサイトはアクセスコードが必要です</p>
+    <input type="password" id="auth-code" placeholder="アクセスコードを入力" autocomplete="off">
+    <button onclick="checkAuth()">Enter</button>
+    <div class="error" id="auth-error">アクセスコードが違います</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const VALID_HASH = '2374b07ef86949de2232cd65030f037a6ed70ab9faf436edf6d85098a734fca8';
+  const SESSION_KEY = 'dct_auth';
+  if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
+    document.getElementById('auth-gate').style.display = 'none';
+  }
+  document.getElementById('auth-code').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') checkAuth();
+  });
+  window.checkAuth = async function() {
+    const code = document.getElementById('auth-code').value;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(code);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    if (hashHex === VALID_HASH) {
+      sessionStorage.setItem(SESSION_KEY, 'ok');
+      document.getElementById('auth-gate').style.display = 'none';
+    } else {
+      document.getElementById('auth-error').style.display = 'block';
+      document.getElementById('auth-code').value = '';
+    }
+  };
+})();
+</script>
+
 <div class="header">
   <h1>Digital Customer Twin</h1>
   <p>AI Consumer Agent Simulation Dashboard Portal</p>
 </div>
+
 <div class="container">
 
-  <div class="flow-diagram">
-    <div style="color:#94a3b8;font-size:0.8rem;margin-bottom:12px;text-align:center;">DCT Workflow</div>
-    <div class="flow-steps">
-      <div class="flow-step" style="background:#1d4ed833;border:1px solid #3b82f6;">
-        <div style="font-size:1.5rem;">📄</div>
-        <div style="color:#60a5fa;font-weight:600;">資料PDF</div>
-        <div style="color:#94a3b8;font-size:0.75rem;">パンフレット</div>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step" style="background:#7c3aed22;border:1px solid #7c3aed;">
-        <div style="font-size:1.5rem;">📝</div>
-        <div style="color:#a78bfa;font-weight:600;">読み原稿</div>
-        <div style="color:#94a3b8;font-size:0.75rem;">セクション構成</div>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step" style="background:#dc262622;border:1px solid #dc2626;">
-        <div style="font-size:1.5rem;">👥</div>
-        <div style="color:#f87171;font-weight:600;">AI顧客評価</div>
-        <div style="color:#94a3b8;font-size:0.75rem;">100人ペルソナ</div>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step" style="background:#05966922;border:1px solid #059669;">
-        <div style="font-size:1.5rem;">🤖</div>
-        <div style="color:#34d399;font-weight:600;">AI壁打ち改善</div>
-        <div style="color:#94a3b8;font-size:0.75rem;">専門家3名提案</div>
-      </div>
-      <div class="flow-arrow">&rarr;</div>
-      <div class="flow-step" style="background:#d9770622;border:1px solid #d97706;">
-        <div style="font-size:1.5rem;">📊</div>
-        <div style="color:#fbbf24;font-weight:600;">効果測定</div>
-        <div style="color:#94a3b8;font-size:0.75rem;">改善率算出</div>
-      </div>
+  <h2 class="section-title">PPN - プレミアパートナー</h2>
+  <div class="cards">
+    <div class="card">
+      <a href="ppn_100agents.html">
+        <span class="card-product product-ppn">PPN</span>
+        <span class="badge badge-knock">Knock Mode</span>
+        <div class="card-title">100 Agents x 3 Rounds</div>
+        <div class="card-meta">
+          <strong>Agent:</strong> 100 / <strong>Seed:</strong> 42<br>
+          <strong>Result:</strong> 0.0% &rarr; 0.0% (3 Rounds)<br>
+          <strong>Sections:</strong> 12 (Talk Script + Thumbnails)<br>
+          <strong>Date:</strong> 2026-04-10
+        </div>
+        <div class="card-arrow">&rarr;</div>
+      </a>
+    </div>
+    <div class="card">
+      <a href="ppn_10agents.html">
+        <span class="card-product product-ppn">PPN</span>
+        <span class="badge badge-knock">Knock Mode</span>
+        <div class="card-title">10 Agents x 3 Rounds</div>
+        <div class="card-meta">
+          <strong>Agent:</strong> 10 / <strong>Seed:</strong> 42<br>
+          <strong>Result:</strong> 0.0% &rarr; 10.0% (+10.0pt)<br>
+          <strong>Sections:</strong> 8 (Talk Script)<br>
+          <strong>Date:</strong> 2026-04-09
+        </div>
+        <div class="card-arrow">&rarr;</div>
+      </a>
     </div>
   </div>
 
-  <h2 class="section-title">PPN - 通貨指定型個人年金保険（24）</h2>
+  <h2 class="section-title">PJ - プレミアジャーニー</h2>
   <div class="cards">
-    <div class="card"><a href="ppn_100agents.html">
-      <span class="card-product product-ppn">PPN</span>
-      <span class="badge badge-knock">Knock Mode</span>
-      <span class="badge badge-new">NEW</span>
-      <div class="card-title">100 Agents x 3 Rounds (12 Sections)</div>
-      <div class="card-meta">
-        <strong>Agent:</strong> 100 / <strong>Sections:</strong> 12<br>
-        <strong>Result:</strong> 6.0% &rarr; 23.0% (+17.0pt)<br>
-        <strong>Feature:</strong> 資料マップタブ搭載<br>
-        <strong>Date:</strong> 2026-04-09
-      </div>
-      <div class="card-arrow">&rarr;</div>
-    </a></div>
-    <div class="card"><a href="ppn_10agents.html">
-      <span class="card-product product-ppn">PPN</span>
-      <span class="badge badge-knock">Knock Mode</span>
-      <div class="card-title">10 Agents x 3 Rounds (8 Sections)</div>
-      <div class="card-meta">
-        <strong>Agent:</strong> 10 / <strong>Sections:</strong> 8<br>
-        <strong>Result:</strong> 0.0% &rarr; 10.0% (+10.0pt)<br>
-        <strong>Date:</strong> 2026-04-09
-      </div>
-      <div class="card-arrow">&rarr;</div>
-    </a></div>
-  </div>
-
-  <h2 class="section-title">PJ - Premier Journey (Comparison)</h2>
-  <div class="cards">
-    <div class="card"><a href="pj_knock.html">
-      <span class="card-product product-pj">PJ</span>
-      <span class="badge badge-knock">Knock Mode</span>
-      <div class="card-title">Real Product - 18 Pages</div>
-      <div class="card-meta">
-        <strong>Agent:</strong> 10 / <strong>Seed:</strong> 42<br>
-        <strong>Product:</strong> Premier Journey<br>
-        <strong>Date:</strong> 2026-03-03
-      </div>
-      <div class="card-arrow">&rarr;</div>
-    </a></div>
-    <div class="card"><a href="pj_standard.html">
-      <span class="card-product product-pj">PJ</span>
-      <span class="badge badge-standard">Standard</span>
-      <div class="card-title">Standard Mode - 100 Agents</div>
-      <div class="card-meta">
-        <strong>Agent:</strong> 100 / <strong>Seed:</strong> 42<br>
-        <strong>Product:</strong> Premier Journey<br>
-        <strong>Date:</strong> 2026-02-25
-      </div>
-      <div class="card-arrow">&rarr;</div>
-    </a></div>
+    <div class="card">
+      <a href="pj_knock.html">
+        <span class="card-product product-pj">PJ</span>
+        <span class="badge badge-knock">Knock Mode</span>
+        <div class="card-title">Real Product - 18 Pages</div>
+        <div class="card-meta">
+          <strong>Agent:</strong> 10 / <strong>Seed:</strong> 42<br>
+          <strong>Product:</strong> プレミアジャーニー<br>
+          <strong>Date:</strong> 2026-03-03
+        </div>
+        <div class="card-arrow">&rarr;</div>
+      </a>
+    </div>
+    <div class="card">
+      <a href="pj_standard.html">
+        <span class="card-product product-pj">PJ</span>
+        <span class="badge badge-standard">Standard</span>
+        <div class="card-title">Standard Mode - 100 Agents</div>
+        <div class="card-meta">
+          <strong>Agent:</strong> 100 / <strong>Seed:</strong> 42<br>
+          <strong>Product:</strong> プレミアジャーニー<br>
+          <strong>Date:</strong> 2026-02-25
+        </div>
+        <div class="card-arrow">&rarr;</div>
+      </a>
+    </div>
   </div>
 
 </div>
+
 <div class="footer">
   Digital Customer Twin PoC &mdash; Powered by AI Agent Simulation
 </div>
+
 </body>
 </html>
