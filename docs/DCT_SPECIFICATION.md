@@ -270,28 +270,56 @@ Round N（最終）:
 ```
 product/
 └── {商品コード}/            例: FWD-2ndFloor/
-    ├── {商品コード}.pdf      例: FWD-2ndFloor.pdf      ← PDF本体
-    ├── {商品コード}_pages.json                         ← ページテキスト（自動生成可）
-    ├── {商品コード}_config.json                        ← ページ設定（手動作成）
-    └── talk_script_{商品コード}_v1.json                ← Knock Mode用（任意）
+    ├── {商品コード}.pdf                               ← PDF本体（必須）
+    ├── {商品コード}_pages.json                        ← ページテキスト（自動生成）
+    ├── {商品コード}_config.json                       ← ページ設定（手動作成・必須）
+    └── talk_script_{商品コード}_v1.json               ← AI生成読み原稿（generate_talk_script.pyで自動生成）
 ```
 
-### 6.2 ステップ1: PDFからページテキストを抽出
+### 6.2 ステップ1: config.jsonを先に作成
+
+**⚠️ 重要**: PDFを触る前にconfig.jsonを作成する。ページタイトルと不安度設定は読み原稿の品質に直結する。
+
+→ **§6.4「config.jsonを作成」を先に実施すること**
+
+### 6.3 ステップ2: AI読み原稿を生成（必須）
+
+保険PDFは縦書きレイアウトのため、生テキスト抽出は崩れる。**必ずGemini APIで読み原稿を生成する**。
 
 ```bash
-python -c "
-import pdfplumber, json
-pages = []
-with pdfplumber.open('product/FWD-2ndFloor/FWD-2ndFloor.pdf') as pdf:
-    for i, page in enumerate(pdf.pages, 1):
-        text = page.extract_text() or ''
-        pages.append({'page_num': i, 'text': text})
-json.dump(pages, open('product/FWD-2ndFloor/fwd2nd_pages.json','w',encoding='utf-8'), ensure_ascii=False, indent=2)
-print(f'Extracted {len(pages)} pages')
-"
+# 品質チェックのみ（APIを使わない）
+python tools/generate_talk_script.py \
+  --product-dir product/FWD-2ndFloor \
+  --product-code fwd2nd \
+  --dry-run
+
+# 本番生成（22ページで約1.5分）
+python tools/generate_talk_script.py \
+  --product-dir product/FWD-2ndFloor \
+  --product-code fwd2nd \
+  --delay 3.0
+
+# 特定ページのみ再生成
+python tools/generate_talk_script.py \
+  --product-dir product/FWD-2ndFloor \
+  --product-code fwd2nd \
+  --pages 7,15-18 \
+  --resume
 ```
 
-### 6.3 ステップ2: config.jsonを作成
+**生成物**:
+- `{product_code}_pages.json` — `script` フィールドに読み原稿を追加（元テキストも `text` で保持）
+- `talk_script_{product_code}_v1.json` — Knock Mode用トークスクリプト
+
+**品質チェック基準**（自動適用）:
+| 条件 | 閾値 | 対処 |
+|------|------|------|
+| テキスト長 | 100文字以上 | NG: 再生成 |
+| 日本語率 | 50%以上 | NG: 再生成 |
+| ですます調 | 含む | NG: 再生成 |
+| テキスト長上限 | 2000文字以下 | 警告のみ |
+
+### 6.4 ステップ2（実際の作業順）: config.jsonを作成
 
 各ページに以下を設定：
 
@@ -346,7 +374,7 @@ print(f'Extracted {len(pages)} pages')
 }
 ```
 
-### 6.4 ステップ3: Standard Mode で実行
+### 6.5 ステップ4: Standard Mode で実行
 
 ```bash
 # 基本実行（30エージェント、ビルトインペルソナ使用）
