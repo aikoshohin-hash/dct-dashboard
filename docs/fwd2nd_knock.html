@@ -1161,7 +1161,19 @@ const RESULTS = {"run_id": "run_20260420_134624", "mode": "knock", "config": {"n
       '実績データに対する信頼性不足': '#6B7280',
       'ターゲット層に対する配慮不足': '#BE185D',
     };
-    // Group by page, then show script excerpt + complaint
+    // 営業の返答テンプレート（カテゴリ別）
+    const ackMap = {
+      '専門用語に対する説明不足': 'おっしゃる通りです。専門用語が多くて分かりにくかったですね。改めてご説明します。',
+      'リスク特性に対する説明の欠如': 'リスクについてのご不安は当然です。大切なポイントですので、もう少し丁寧にご説明しますね。',
+      '運用実態に対する不透明感': '運用の仕組みが不透明に感じられたのは、ご説明が足りなかったからです。詳しくお伝えします。',
+      '途中解約に対する元本割れリスク': '解約時の取り扱いは非常に重要なご指摘です。具体的な数字を挙げてご説明しますね。',
+      '商品構造に対する複雑性': '確かに構造が複雑でしたね。要点を絞ってシンプルにご説明しなおします。',
+      'ターゲット層に対する配慮不足': 'ご状況に合わせた説明ができておらず申し訳ありません。改めてご説明します。',
+      '図表表示に対する視認性不足': '資料の見やすさについてのご指摘、ありがとうございます。口頭でも補足します。',
+      '実績データに対する信頼性不足': 'データの根拠についてのご疑問はもっともです。出典を含めてご説明します。',
+      '資産拘束に対する流動性不安': '流動性についてのご不安はよく承知しています。解約ルールを含めて詳しくご説明します。',
+    };
+    // Group by page
     const byPage = {};
     uniqueC.forEach(c => {
       if (!byPage[c.page]) byPage[c.page] = [];
@@ -1169,28 +1181,57 @@ const RESULTS = {"run_id": "run_20260420_134624", "mode": "knock", "config": {"n
     });
     const pages = Object.keys(byPage).map(Number).sort((a,b)=>a-b);
 
+    // 営業バブル生成
+    const salesBubble = (text, label) => {
+      let h = '<div style="display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;">';
+      h += '<div style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#2563EB;color:white;font-size:0.63rem;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(37,99,235,0.25);">営業</div>';
+      h += '<div style="flex:1;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:4px 12px 12px 12px;padding:8px 12px;font-size:0.8rem;line-height:1.6;box-shadow:0 1px 2px rgba(0,0,0,0.05);">';
+      if (label) h += '<div style="font-size:0.68rem;color:#2563EB;font-weight:600;margin-bottom:3px;">'+label+'</div>';
+      h += esc(text)+'</div></div>';
+      return h;
+    };
+    // 顧客バブル生成
+    const custBubble = (text, category) => {
+      const catColor = catColors[category] || '#6B7280';
+      let h = '<div style="display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;flex-direction:row-reverse;">';
+      h += '<div style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#7C3AED;color:white;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(124,58,237,0.25);">客</div>';
+      h += '<div style="flex:1;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:12px 4px 12px 12px;padding:8px 12px;font-size:0.8rem;line-height:1.6;text-align:right;box-shadow:0 1px 2px rgba(0,0,0,0.05);">';
+      h += esc(text);
+      h += '<div style="margin-top:4px;"><span style="font-size:0.67rem;color:'+catColor+';font-weight:600;background:white;border:1px solid '+catColor+'44;padding:1px 7px;border-radius:10px;">📌 '+esc(category)+'</span></div>';
+      h += '</div></div>';
+      return h;
+    };
+    // ページ区切り
+    const pageDivider = (pg, title) => {
+      let h = '<div style="display:flex;align-items:center;gap:6px;margin:14px 0 8px;">';
+      h += '<div style="flex:1;height:1px;background:var(--border);"></div>';
+      h += '<span style="font-size:0.71rem;font-weight:600;color:var(--text-muted);white-space:nowrap;padding:2px 10px;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;">📄 P'+pg+(title?' — '+esc(title):'')+'</span>';
+      h += '<div style="flex:1;height:1px;background:var(--border);"></div>';
+      h += '</div>';
+      return h;
+    };
+
     let dialogHtml = '';
-    pages.slice(0,6).forEach(pg => {
+    pages.forEach(pg => {
       const sec = scriptMap[pg];
-      const excerpt = sec ? sec.content.substring(0,80).replace(/\\n/g,' ') + '...' : '（ページ '+pg+' の説明）';
-      // 営業担当の発話
-      dialogHtml += '<div style="display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;">';
-      dialogHtml += '<div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#2563EB;color:white;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;">営業</div>';
-      dialogHtml += '<div style="flex:1;background:#EFF6FF;border-radius:0 8px 8px 8px;padding:7px 10px;font-size:0.78rem;">';
-      dialogHtml += '<span style="color:#2563EB;font-weight:600;font-size:0.7rem;">P'+pg+' 説明中</span><br>'+esc(excerpt)+'</div></div>';
-      // ペルソナの不満
-      byPage[pg].slice(0,2).forEach(c => {
-        const catColor = catColors[c.category] || '#6B7280';
-        dialogHtml += '<div style="display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;flex-direction:row-reverse;">';
-        dialogHtml += '<div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#7C3AED;color:white;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;">客</div>';
-        dialogHtml += '<div style="flex:1;background:#F5F3FF;border-radius:8px 0 8px 8px;padding:7px 10px;font-size:0.78rem;text-align:right;">';
-        dialogHtml += '"'+esc(c.comment)+'"';
-        dialogHtml += '<br><span style="font-size:0.68rem;color:'+catColor+';font-weight:600;">📌 '+esc(c.category)+'</span></div></div>';
+      const pageTitle = sec ? (sec.title || '') : '';
+      const fullContent = sec ? (sec.content || '').replace(/\\n/g,' ') : '';
+      // 最初の一文（句読点区切り、最長150字）を営業の説明として使う
+      const m = fullContent.match(/([^。！？\n]{15,}[。！？])/);
+      const salesSpeech = m ? m[1] : (fullContent.substring(0, 120) + (fullContent.length > 120 ? '…' : '')) || '（'+pageTitle+' についてご説明します）';
+
+      dialogHtml += pageDivider(pg, pageTitle);
+      dialogHtml += salesBubble(salesSpeech, null);
+
+      byPage[pg].forEach(c => {
+        // 客の質問・不満
+        dialogHtml += custBubble(c.comment, c.category);
+        // 営業の返答
+        const ack = ackMap[c.category] || 'ご質問ありがとうございます。その点について補足させていただきます。';
+        dialogHtml += salesBubble(ack, null);
       });
     });
-    if (pages.length > 6) {
-      dialogHtml += '<div style="text-align:center;font-size:0.75rem;color:var(--text-muted);padding:4px;">他 '+(pages.length-6)+' ページでの発言あり</div>';
-    }
+
     if (!dialogHtml) {
       dialogHtml = '<div style="text-align:center;color:var(--text-muted);padding:12px;font-size:0.85rem;">不満・質問なし（スムーズに理解）</div>';
     }
